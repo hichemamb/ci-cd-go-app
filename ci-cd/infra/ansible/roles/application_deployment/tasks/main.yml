@@ -1,0 +1,19 @@
+- name: Create application directory
+  file:
+    path: "{{ application_directory }}"
+    state: directory
+    owner: "{{ application_user }}"
+    group: "{{ application_group }}"
+
+- name: Copy docker-compose configuration file
+  template:
+    src: ../templates/docker-compose.yml
+    dest: "{{ application_directory }}/docker-compose.yml"
+    owner: "{{ application_user }}"
+    group: "{{ application_group }}"
+  notify: Restart docker-compose for project
+
+- name: Docker-compose up webserver
+  docker_compose:
+    project_src: "{{ application_directory }}"
+    state: present

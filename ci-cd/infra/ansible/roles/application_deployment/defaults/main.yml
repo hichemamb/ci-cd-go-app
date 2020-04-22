@@ -1,0 +1,12 @@
+application_redis_host: ""
+application_redis_port: 6379
+
+application_docker_user: hichemamb
+application_docker_image: app-hetic
+application_docker_tag: latest
+
+application_user: ubuntu
+application_group: ubuntu
+application_directory: "/opt/app"
+
+application_port: 80

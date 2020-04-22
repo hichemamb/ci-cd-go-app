@@ -1,0 +1,4 @@
+- name: Restart docker-compose for project
+  docker_compose:
+    project_src: "{{ application_directory }}"
+    restarted: yes

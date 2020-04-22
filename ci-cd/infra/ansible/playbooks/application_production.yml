@@ -1,0 +1,12 @@
+- name: Install libs/docker
+  hosts: tag_stage_production
+  become: yes
+  roles:
+    - { role: common, tags: ["common"] }
+    - { role: geerlingguy.docker, tags: ["docker"] }
+
+- name: Install and deploy web application
+  hosts: tag_stage_production:&tag_component_application
+  become: yes
+  roles:
+    - { role: application_deployment, tags: ["application_deployment"] }
