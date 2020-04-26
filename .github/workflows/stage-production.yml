@@ -1,7 +1,7 @@
 name: Build and deploy the application to the production stage
 
 on:
-  push:
+  release:
     types:
       - published
 
