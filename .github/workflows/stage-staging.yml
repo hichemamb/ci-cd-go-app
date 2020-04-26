@@ -1,0 +1,27 @@
+name: Build and deploy the application to the staging stage
+
+on:
+  push:
+    branches:
+      - master
+  env:
+    DOCKER_IMAGE: hichemamb/app-hetic
+
+jobs:
+  build-and-push:
+    name: Job which build and push the docker image of the application
+    runs-on: ubuntu-18.04
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build and tag docker image
+        run: |
+          cd ci-cd/go
+          docker build . --file Dockerfile --tag "$DOCKER_IMAGE:${GITHUB_SHA:10}"
+
+      - name: Login to DockerHub Registry
+        run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+
+      - name: Push the tagged docker image
+        run: docker push "$DOCKER_IMAGE:${GITHUB_SHA:10}"
