@@ -51,9 +51,11 @@ jobs:
         run: |
           mkdir ~/.ssh
           echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod a+rwx ~/.ssh/id_rsa
 
       - name: Start the ansible playbook on staging stage
         run: |
+          chmod a+rwx inventory/ec2.py
           ansible-playbook -i inventory/ec2.py playbooks/application_staging.yml --user ubuntu --key ~/.ssh/id_rsa -e "application_docker_tag=${GITHUB_SHA:10}" --become
         working-directory: ./ci-cd/infra/ansible
         env:
