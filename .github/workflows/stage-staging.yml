@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - master
-  env:
-    DOCKER_IMAGE: hichemamb/app-hetic
 
 jobs:
   build-and-push:
@@ -19,9 +17,13 @@ jobs:
         run: |
           cd ci-cd/go
           docker build . --file Dockerfile --tag "$DOCKER_IMAGE:${GITHUB_SHA:10}"
+        env:
+          DOCKER_IMAGE: hichemamb/app-hetic
 
       - name: Login to DockerHub Registry
         run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
 
       - name: Push the tagged docker image
         run: docker push "$DOCKER_IMAGE:${GITHUB_SHA:10}"
+        env:
+          DOCKER_IMAGE: hichemamb/app-hetic
