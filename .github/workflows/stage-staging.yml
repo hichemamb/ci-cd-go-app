@@ -21,7 +21,7 @@ jobs:
           DOCKER_IMAGE: hichemamb/app-hetic
 
       - name: Login to DockerHub Registry
-        run: echo "$DOCKERHUB_USERNAME" | docker login --u $DOCKERHUB_PASSWORD --password-stdin
+        run: echo "$DOCKERHUB_USERNAME" | docker login --username $DOCKERHUB_PASSWORD --password-stdin
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
