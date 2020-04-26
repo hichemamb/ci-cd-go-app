@@ -8,7 +8,7 @@ on:
 jobs:
   build-and-push:
     name: Job which build and push the docker image of the application
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
 
     steps:
       - uses: actions/checkout@v2
@@ -27,3 +27,35 @@ jobs:
         run: docker push "$DOCKER_IMAGE:${GITHUB_SHA:10}"
         env:
           DOCKER_IMAGE: hichemamb/app-hetic
+
+  deploy:
+    name: Job which deploy to AWS using ansible
+    runs-on: ubuntu-18.04
+    needs: build-and-push
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      - name: Install ansible and ansible dependencies with pip
+        run: |
+          python -m pip install --upgrade pip
+          pip install ansible
+          pip install -r ./ci-cd/infra/ansible/requirements.txt
+
+      - name: Set SSH private key
+        run: |
+          mkdir ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+
+      - name: Start the ansible playbook on staging stage
+        run: |
+          ansible-playbook -i inventory/ec2.py playbooks/application_staging.yml --user ubuntu --key ~/.ssh/id_rsa -e "application_docker_tag=${GITHUB_SHA:10}" --become
+        working-directory: ./ci-cd/infra/ansible
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
